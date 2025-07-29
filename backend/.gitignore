@@ -1,0 +1,251 @@
+# ===== NODE.JS & NPM =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# ===== SECURITY & CONFIGURATION FILES =====
+# Configuration files that may contain sensitive data
+/config/
+config/
+*.config.js
+*.config.json
+smtp-config.json
+openai-config.json
+email-config.json
+database-config.json
+
+# Environment variables and secrets
+.env
+.env.*
+*.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# API Keys and credentials
+*api-key*
+*api_key*
+*apikey*
+*secret*
+*password*
+*credential*
+*token*
+*key*
+
+# ===== USER DATA & DATABASES =====
+# JSON data files containing user information
+/data/
+data/
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!jsconfig.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.mdb
+*.accdb
+*.sql
+
+# User data and personal information
+/user-data/
+/users/
+/profiles/
+/accounts/
+/verification-tokens/
+/email-tokens/
+
+# ===== LOGS & TEMPORARY FILES =====
+# Log files that might contain sensitive information
+*.log
+logs/
+log/
+debug.log
+error.log
+access.log
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+tmp/
+temp/
+
+# ===== DEVELOPMENT & IDE FILES =====
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# ===== BACKUP & VERSION CONTROL =====
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Git files (if this is a submodule)
+.git/
+
+# ===== CERTIFICATES & KEYS =====
+# Certificate files
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+
+# SSH keys
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.ppk
+
+# ===== CLOUD & DEPLOYMENT =====
+# Docker files that might contain secrets
+docker-compose.override.yml
+docker-compose.prod.yml
+.dockerignore
+
+# AWS and cloud credentials
+.aws/
+aws-credentials
+*.pem
+*.key
+
+# ===== CACHE & BUILD =====
+# Cache directories
+.cache/
+cache/
+*.cache
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# ===== RUNTIME & PROCESS =====
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Process managers
+.pm2/
+pm2.log
+
+# ===== TESTING =====
+# Test coverage
+coverage/
+.nyc_output/
+
+# Test databases
+test.db
+test.sqlite
+
+# ===== EMAIL & VERIFICATION =====
+# Email verification tokens
+verification-tokens.json
+email-tokens.json
+temp-tokens.json
+
+# ===== SPECIFIC BACKEND FILES =====
+# Test files that might contain sensitive data
+test-*.js
+*-test.js
+test/
+tests/
+
+# Temporary email test files
+test-email.js
+test-openai.js
+test-passwords.js
+
+# Local development files
+local/
+dev/
+development/
+
+# ===== MONITORING & DEBUGGING =====
+# Debug files
+debug/
+*.debug
+
+# Performance monitoring
+*.prof
+*.cpuprofile
+
+# ===== PACKAGE MANAGERS =====
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ===== OPTIONAL CACHE =====
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# ===== SECURITY SCANS =====
+# Security scan results
+security-scan/
+vulnerability-report/
+*.security
+
+# ===== ENCRYPTION =====
+# Encrypted files
+*.enc
+*.gpg
+*.asc
+
+# ===== BACKUP & ARCHIVE =====
+# Archive files
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# ===== MONITORING & METRICS =====
+# Metrics and monitoring data
+metrics/
+monitoring/
+stats/
+*.metrics
+*.stats 
+
+
+#data files
+/data
