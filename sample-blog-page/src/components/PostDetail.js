@@ -20,8 +20,8 @@ const PostDetail = () => {
       const response = await blogAPI.getPost(id);
       const postData = response.data;
       
-      // Check if the post belongs to the configured user
-      if (postData.authorId !== config.user.id) {
+      // Check if the post belongs to the configured user AND is published
+      if (postData.authorId !== config.user.id || postData.isPublic !== true) {
         setError('Post not found or access denied');
         setLoading(false);
         return;
@@ -114,14 +114,46 @@ const PostDetail = () => {
 
         {/* Post Content */}
         <div className="post-content">
-          <header className="post-header mb-4">
+          {/* Post Image */}
+          <div className="post-image-container mb-4">
+            {post.imageUrl ? (
+              <img 
+                src={post.imageUrl} 
+                alt={post.title}
+                className="post-image"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'block';
+                }}
+              />
+            ) : (
+              <div className="placeholder-image">
+                <div className="placeholder-content">
+                  <span className="placeholder-icon">
+                    {post.generatedFrom ? '🤖' : '📝'}
+                  </span>
+                  <p className="placeholder-text">{post.title}</p>
+                </div>
+              </div>
+            )}
+            <div className="placeholder-image" style={{ display: 'none' }}>
+              <div className="placeholder-content">
+                <span className="placeholder-icon">
+                  {post.generatedFrom ? '🤖' : '📝'}
+                </span>
+                <p className="placeholder-text">{post.title}</p>
+              </div>
+            </div>
+          </div>
+          
+          <header className="post-header">
             <h1 className="post-title">{post.title}</h1>
             <div className="post-meta">
-              <p className="text-muted">
+              <p>
                 By <strong>{post.authorName}</strong> • {formatDate(post.createdAt)}
               </p>
               {post.metaDescription && (
-                <p className="lead text-muted">{post.metaDescription}</p>
+                <p className="lead">{post.metaDescription}</p>
               )}
             </div>
           </header>
@@ -129,7 +161,7 @@ const PostDetail = () => {
           <div className="post-body">
             <div className="content">
               {post.content.split('\n').map((paragraph, index) => (
-                <p key={index} className="mb-3">
+                <p key={index}>
                   {paragraph}
                 </p>
               ))}
@@ -137,7 +169,7 @@ const PostDetail = () => {
           </div>
 
           {/* Post Footer */}
-          <footer className="post-footer mt-5">
+          <footer className="post-footer">
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <p className="text-muted small mb-0">

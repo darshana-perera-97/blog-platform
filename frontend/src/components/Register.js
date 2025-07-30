@@ -115,16 +115,13 @@ const Register = () => {
   }
 
   return (
-    <Container className="py-5">
-      <Row className="justify-content-center">
-        <Col xs={12} sm={8} md={6} lg={4}>
-          <div className="text-center mb-4">
-            <h1 className="h3 fw-bold text-primary mb-2">Create Account</h1>
-            <p className="text-muted">Join us to start creating amazing content</p>
-          </div>
-          
-          <Card className="shadow-sm border-0">
-            <Card.Body className="p-4">
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h2 className="auth-title">Create Account</h2>
+          <p className="auth-subtitle">Join us to start creating amazing content</p>
+        </div>
+        <div className="auth-body">
               {error && <Alert variant="danger" className="mb-3">{error}</Alert>}
               
               <Form onSubmit={handleSubmit}>
@@ -209,11 +206,9 @@ const Register = () => {
                   </p>
                 </div>
               </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+            </div>
+          </div>
+        </div>
   );
 };
 

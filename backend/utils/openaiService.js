@@ -106,11 +106,126 @@ class OpenAIService {
       });
 
       const generatedContent = response.choices[0].message.content;
-      return this.parseGeneratedContent(generatedContent);
+      const parsedContent = this.parseGeneratedContent(generatedContent);
+      
+      // Generate image for the blog post
+      let imageUrl = null;
+      try {
+        console.log('🖼️ Generating image for blog post:', parsedContent.title);
+        console.log('📝 Topic:', topic);
+        imageUrl = await this.generateBlogImage(parsedContent.title, topic);
+        console.log('✅ Image generated successfully:', imageUrl ? 'Yes' : 'No');
+        if (imageUrl) {
+          console.log('🔗 Image URL:', imageUrl);
+        }
+      } catch (imageError) {
+        console.warn('❌ Image generation failed, will use placeholder:', imageError.message);
+        console.error('Image generation error details:', imageError);
+        imageUrl = null;
+      }
+
+      return {
+        ...parsedContent,
+        imageUrl: imageUrl
+      };
     } catch (error) {
       console.error('OpenAI API error:', error);
       throw new Error(`Failed to generate blog post: ${error.message}`);
     }
+  }
+
+  async generateBlogImage(title, topic) {
+    if (!this.initialized || !this.openai) {
+      throw new Error('OpenAI service not initialized or API key not configured');
+    }
+
+    try {
+      // Use ChatGPT to create a better image prompt
+      console.log('🤖 Using ChatGPT to generate image prompt...');
+      const imagePrompt = await this.buildImagePromptWithChatGPT(title, topic);
+      console.log('🖼️ ChatGPT-generated image prompt:', imagePrompt);
+      
+      // Use DALL-E 3 to generate the actual image
+      console.log('🎨 Using DALL-E 3 to generate image...');
+      console.log('📝 DALL-E prompt:', imagePrompt);
+      
+      const response = await this.openai.images.generate({
+        model: "dall-e-3",
+        prompt: imagePrompt,
+        size: "1024x1024",
+        quality: "standard",
+        n: 1,
+      });
+
+      if (!response.data || !response.data[0] || !response.data[0].url) {
+        throw new Error('No image URL received from DALL-E API');
+      }
+
+      const imageUrl = response.data[0].url;
+      console.log('🖼️ Generated image URL:', imageUrl);
+      return imageUrl;
+    } catch (error) {
+      console.error('❌ OpenAI Image API error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        status: error.status,
+        response: error.response?.data
+      });
+      throw new Error(`Failed to generate image: ${error.message}`);
+    }
+  }
+
+  async buildImagePromptWithChatGPT(title, topic) {
+    try {
+      const prompt = `Create a detailed, professional image prompt for a blog header image.
+
+Blog Title: "${title}"
+Topic: "${topic}"
+
+Requirements:
+- Professional, modern design
+- Suitable for blog headers
+- Relevant to the topic
+- No text overlay
+- High contrast and good composition
+- Clean, minimalistic style
+- Suitable for both light and dark themes
+
+Generate a detailed, creative prompt that will produce an excellent image. Focus on visual elements, colors, and composition.`;
+
+      const response = await this.openai.chat.completions.create({
+        model: this.config.openai.model, // Use configured model instead of hardcoded gpt-4
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 200,
+        temperature: 0.7
+      });
+
+      return response.choices[0].message.content;
+    } catch (error) {
+      console.warn('ChatGPT prompt generation failed, using fallback:', error.message);
+      return this.buildFallbackImagePrompt(title, topic);
+    }
+  }
+
+  buildFallbackImagePrompt(title, topic) {
+    return `Create a professional, high-quality blog header image for a blog post titled "${title}" about "${topic}". 
+    
+    Requirements:
+    - Modern, clean design
+    - Professional appearance
+    - Relevant to the topic
+    - Suitable for blog headers
+    - No text overlay (we'll add text separately)
+    - High contrast and good composition
+    - Suitable for both light and dark themes
+    
+    Style: Professional, modern, clean, minimalistic`;
+  }
+
+  buildImagePrompt(title, topic) {
+    // This method is kept for backward compatibility
+    return this.buildFallbackImagePrompt(title, topic);
   }
 
   buildBlogPrompt(masterPrompt, topic, style) {

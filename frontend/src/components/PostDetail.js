@@ -35,7 +35,7 @@ const PostDetail = () => {
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
         await postsAPI.deletePost(id);
-        navigate('/');
+        navigate('/home');
       } catch (err) {
         setError('Failed to delete post');
       }
@@ -71,7 +71,7 @@ const PostDetail = () => {
               <Alert.Heading>Error</Alert.Heading>
               <p>{error || 'Post not found'}</p>
               <hr />
-              <Button as={Link} to="/" variant="outline-danger">
+              <Button as={Link} to="/home" variant="outline-danger">
                 Go Back Home
               </Button>
             </Alert>
@@ -86,6 +86,37 @@ const PostDetail = () => {
       <Row className="justify-content-center">
         <Col xs={12} md={10} lg={8}>
           <Card className="shadow">
+            {/* Post Image */}
+            <div className="post-image-container">
+              {post.imageUrl ? (
+                <img 
+                  src={post.imageUrl} 
+                  alt={post.title}
+                  className="post-image"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'block';
+                  }}
+                />
+              ) : (
+                <div className="placeholder-image">
+                  <div className="placeholder-content">
+                    <span className="placeholder-icon">
+                      {post.generatedFrom ? '🤖' : '📝'}
+                    </span>
+                    <p className="placeholder-text">{post.title}</p>
+                  </div>
+                </div>
+              )}
+              <div className="placeholder-image" style={{ display: 'none' }}>
+                <div className="placeholder-content">
+                  <span className="placeholder-icon">
+                    {post.generatedFrom ? '🤖' : '📝'}
+                  </span>
+                  <p className="placeholder-text">{post.title}</p>
+                </div>
+              </div>
+            </div>
             <Card.Body className="p-4">
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <div>
@@ -151,7 +182,7 @@ const PostDetail = () => {
               )}
 
               <div className="mt-4">
-                <Button as={Link} to="/" variant="outline-primary">
+                <Button as={Link} to="/home" variant="outline-primary">
                   ← Back to Posts
                 </Button>
               </div>

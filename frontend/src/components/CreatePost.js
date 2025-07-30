@@ -7,7 +7,8 @@ const CreatePost = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    metaDescription: ''
+    metaDescription: '',
+    imageUrl: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,8 @@ const CreatePost = () => {
         setFormData({
           title: parsedData.title || '',
           content: parsedData.content || '',
-          metaDescription: parsedData.metaDescription || ''
+          metaDescription: parsedData.metaDescription || '',
+          imageUrl: parsedData.imageUrl || ''
         });
         setIsAIGenerated(true);
         // Clear the session storage
@@ -55,8 +57,17 @@ const CreatePost = () => {
     setLoading(true);
 
     try {
+      // Check if this is an AI-generated post with a DALL-E image URL
+      const isAIGeneratedWithImage = isAIGenerated && formData.imageUrl && formData.imageUrl.startsWith('http');
+      
+      if (isAIGeneratedWithImage) {
+        // For AI-generated posts with DALL-E images, we need to download the image
+        // The backend will handle this automatically
+        console.log('🤖 Creating AI-generated post with image download...');
+      }
+      
       await postsAPI.createPost(formData);
-      navigate('/');
+      navigate('/home');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create post');
     } finally {
@@ -121,6 +132,20 @@ const CreatePost = () => {
                   </Form.Text>
                 </Form.Group>
 
+                <Form.Group className="mb-3">
+                  <Form.Label>Image URL (Optional)</Form.Label>
+                  <Form.Control
+                    type="url"
+                    name="imageUrl"
+                    value={formData.imageUrl}
+                    onChange={handleChange}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  <Form.Text className="text-muted">
+                    Add an image URL to display with your post. Leave empty to use a placeholder image.
+                  </Form.Text>
+                </Form.Group>
+
                 <Form.Group className="mb-4">
                   <Form.Label>Content</Form.Label>
                   <Form.Control
@@ -143,7 +168,7 @@ const CreatePost = () => {
                 <div className="d-flex gap-2">
                   <Button
                     variant="secondary"
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate('/home')}
                     className="flex-fill"
                   >
                     Cancel

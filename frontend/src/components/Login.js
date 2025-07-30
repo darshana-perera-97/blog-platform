@@ -31,7 +31,7 @@ const Login = () => {
 
     try {
       await login(formData);
-      navigate('/');
+      navigate('/home');
     } catch (err) {
       if (err.response?.data?.emailNotVerified) {
         setEmailNotVerified(true);
@@ -46,105 +46,98 @@ const Login = () => {
   };
 
   return (
-    <Container className="py-5">
-      <Row className="justify-content-center">
-        <Col xs={12} sm={8} md={6} lg={4}>
-          <div className="text-center mb-4">
-            <h1 className="h3 fw-bold text-primary mb-2">Welcome Back</h1>
-            <p className="text-muted">Sign in to your account to continue</p>
-          </div>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h2 className="auth-title">Welcome Back</h2>
+          <p className="auth-subtitle">Sign in to your account to continue</p>
+        </div>
+        <div className="auth-body">
+          {error && <Alert variant="danger" className="mb-3">{error}</Alert>}
           
-          <Card className="shadow-sm border-0">
-            <Card.Body className="p-4">
-              {error && <Alert variant="danger" className="mb-3">{error}</Alert>}
-              
-              {emailNotVerified && (
-                <Alert variant="warning" className="mb-3">
-                  <div className="d-flex align-items-start">
-                    <div className="flex-grow-1">
-                      <h6 className="alert-heading mb-2">Email Not Verified</h6>
-                      <p className="mb-2 small">Please verify your email address before logging in.</p>
-                      <div className="d-flex gap-2">
-                        <Button 
-                          as={Link} 
-                          to="/resend-verification" 
-                          variant="outline-warning"
-                          size="sm"
-                        >
-                          Resend Email
-                        </Button>
-                        <Button 
-                          as={Link} 
-                          to="/verify-email" 
-                          variant="outline-primary"
-                          size="sm"
-                        >
-                          Verify Email
-                        </Button>
-                      </div>
-                    </div>
+          {emailNotVerified && (
+            <Alert variant="warning" className="mb-3">
+              <div className="d-flex align-items-start">
+                <div className="flex-grow-1">
+                  <h6 className="alert-heading mb-2">Email Not Verified</h6>
+                  <p className="mb-2 small">Please verify your email address before logging in.</p>
+                  <div className="d-flex gap-2">
+                    <Button 
+                      as={Link} 
+                      to="/resend-verification" 
+                      variant="outline-warning"
+                      size="sm"
+                    >
+                      Resend Email
+                    </Button>
+                    <Button 
+                      as={Link} 
+                      to="/verify-email" 
+                      variant="outline-primary"
+                      size="sm"
+                    >
+                      Verify Email
+                    </Button>
                   </div>
-                </Alert>
-              )}
-              
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-medium">Username or Email</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="emailOrUsername"
-                    value={formData.emailOrUsername}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your username or email"
-                    className="form-control-lg"
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-4">
-                  <Form.Label className="fw-medium">Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your password"
-                    className="form-control-lg"
-                  />
-                </Form.Group>
-
-                <Button 
-                  type="submit" 
-                  variant="primary" 
-                  size="lg"
-                  className="w-100 mb-3"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Signing in...
-                    </>
-                  ) : (
-                    'Sign In'
-                  )}
-                </Button>
-
-                <div className="text-center">
-                  <p className="text-muted mb-0">
-                    Don't have an account?{' '}
-                    <Link to="/register" className="text-decoration-none fw-medium">
-                      Create one here
-                    </Link>
-                  </p>
                 </div>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+              </div>
+            </Alert>
+          )}
+          
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Username or Email</Form.Label>
+              <Form.Control
+                type="text"
+                name="emailOrUsername"
+                value={formData.emailOrUsername}
+                onChange={handleChange}
+                required
+                placeholder="Enter your username or email"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-4">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                placeholder="Enter your password"
+              />
+            </Form.Group>
+
+            <Button 
+              type="submit" 
+              variant="primary" 
+              size="lg"
+              className="w-100 mb-3"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+
+            <div className="text-center">
+              <p className="text-muted mb-0">
+                Don't have an account?{' '}
+                <Link to="/register" className="text-decoration-none fw-medium">
+                  Create one here
+                </Link>
+              </p>
+            </div>
+          </Form>
+        </div>
+      </div>
+    </div>
   );
 };
 

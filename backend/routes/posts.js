@@ -1,6 +1,8 @@
 const express = require('express');
 const { readJsonFile, writeJsonFile, generateId } = require('../utils/fileUtils');
 const { authenticateToken } = require('../middleware/auth');
+const { getPostImageUrl } = require('../utils/imageUtils');
+const imageStorage = require('../utils/imageStorage');
 
 const router = express.Router();
 
@@ -19,16 +21,31 @@ router.get('/', async (req, res) => {
       try {
         const decoded = jwt.verify(token, JWT_SECRET);
         const userPosts = posts.filter(post => post.authorId === decoded.id);
-        res.json(userPosts);
+        // Add image URLs to posts
+        const postsWithImages = userPosts.map(post => ({
+          ...post,
+          imageUrl: getPostImageUrl(post)
+        }));
+        res.json(postsWithImages);
       } catch (error) {
         // Invalid token, show only public posts
         const publicPosts = posts.filter(post => post.isPublic);
-        res.json(publicPosts);
+        // Add image URLs to posts
+        const postsWithImages = publicPosts.map(post => ({
+          ...post,
+          imageUrl: getPostImageUrl(post)
+        }));
+        res.json(postsWithImages);
       }
     } else {
       // No token, show only public posts
       const publicPosts = posts.filter(post => post.isPublic);
-      res.json(publicPosts);
+      // Add image URLs to posts
+      const postsWithImages = publicPosts.map(post => ({
+        ...post,
+        imageUrl: getPostImageUrl(post)
+      }));
+      res.json(postsWithImages);
     }
   } catch (error) {
     console.error('Get posts error:', error);
@@ -66,7 +83,13 @@ router.get('/:id', async (req, res) => {
       }
     }
     
-    res.json(post);
+    // Add image URL to the post
+    const postWithImage = {
+      ...post,
+      imageUrl: getPostImageUrl(post)
+    };
+    
+    res.json(postWithImage);
   } catch (error) {
     console.error('Get post error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -76,7 +99,7 @@ router.get('/:id', async (req, res) => {
 // Create new post (protected route - defaults to private)
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { title, content, metaDescription, isPublic = false } = req.body;
+    const { title, content, metaDescription, imageUrl, isPublic = false } = req.body;
 
     if (!title || !content) {
       return res.status(400).json({ message: 'Title and content are required' });
@@ -92,6 +115,7 @@ router.post('/', authenticateToken, async (req, res) => {
       title,
       content,
       metaDescription: metaDescription || '',
+      imageUrl: imageUrl || null,
       authorId: req.user.id,
       authorName: user.username,
       isPublic: false, // Always default to private for security
@@ -99,8 +123,37 @@ router.post('/', authenticateToken, async (req, res) => {
       updatedAt: new Date().toISOString()
     };
 
+    // Save the post first to get the ID
     posts.push(newPost);
     await writeJsonFile('posts.json', posts);
+
+    // If there's a DALL-E image URL, download and save it locally
+    if (imageUrl && imageUrl.startsWith('http')) {
+      try {
+        console.log('💾 Downloading DALL-E image for new post...');
+        const localImagePath = await imageStorage.saveGeneratedImage(
+          imageUrl, 
+          newPost.id, 
+          newPost.title
+        );
+        
+        // Update the post with the local image path
+        newPost.imageUrl = localImagePath;
+        
+        // Update the post in the file
+        const updatedPosts = await readJsonFile('posts.json');
+        const postIndex = updatedPosts.findIndex(p => p.id === newPost.id);
+        if (postIndex !== -1) {
+          updatedPosts[postIndex] = newPost;
+          await writeJsonFile('posts.json', updatedPosts);
+        }
+        
+        console.log('✅ DALL-E image saved locally:', localImagePath);
+      } catch (imageError) {
+        console.warn('⚠️ Failed to save DALL-E image locally:', imageError.message);
+        // Continue without image
+      }
+    }
 
     res.status(201).json(newPost);
   } catch (error) {
@@ -156,7 +209,7 @@ router.patch('/:id/publish', authenticateToken, async (req, res) => {
 // Update post (protected route - only author can update)
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-    const { title, content, metaDescription } = req.body; // Remove isPublic from update
+    const { title, content, metaDescription, imageUrl } = req.body; // Remove isPublic from update
     const postId = parseInt(req.params.id);
 
     if (!title || !content) {
@@ -183,6 +236,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       title,
       content,
       metaDescription: metaDescription !== undefined ? metaDescription : post.metaDescription,
+      imageUrl: imageUrl !== undefined ? imageUrl : post.imageUrl,
       updatedAt: new Date().toISOString()
     };
 
@@ -210,6 +264,11 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     // Check if user is the author
     if (post.authorId !== req.user.id) {
       return res.status(403).json({ message: 'You can only delete your own posts' });
+    }
+
+    // Delete associated image if it exists
+    if (post.imageUrl) {
+      await imageStorage.deleteImage(post.imageUrl);
     }
 
     // Remove post

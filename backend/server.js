@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 const authRoutes = require('./routes/auth');
 const postsRoutes = require('./routes/posts');
 const promptsRoutes = require('./routes/prompts');
@@ -15,6 +16,9 @@ const PORT = 3033;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve static files (blog images)
+app.use('/blog_images', express.static(path.join(__dirname, 'blog_images')));
 
 // Initialize services
 async function initializeServices() {

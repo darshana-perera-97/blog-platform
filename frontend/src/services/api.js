@@ -42,6 +42,7 @@ export const authAPI = {
   getCurrentUser: () => api.get('/auth/me'),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
   resendVerification: (email) => api.post('/auth/resend-verification', { email }),
+  getUsageStats: () => api.get('/ai-blog/usage'),
 };
 
 // Posts API

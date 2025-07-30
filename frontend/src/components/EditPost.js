@@ -8,7 +8,8 @@ const EditPost = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    metaDescription: ''
+    metaDescription: '',
+    imageUrl: ''
   });
   const [post, setPost] = useState(null);
   const [error, setError] = useState('');
@@ -39,7 +40,8 @@ const EditPost = () => {
       setFormData({
         title: postData.title,
         content: postData.content,
-        metaDescription: postData.metaDescription || ''
+        metaDescription: postData.metaDescription || '',
+        imageUrl: postData.imageUrl || ''
       });
     } catch (err) {
       setError('Post not found or you do not have permission to edit it');
@@ -96,7 +98,7 @@ const EditPost = () => {
               <Alert.Heading>Error</Alert.Heading>
               <p>{error}</p>
               <hr />
-              <Button onClick={() => navigate('/')} variant="outline-danger">
+                              <Button onClick={() => navigate('/home')} variant="outline-danger">
                 Go Back Home
               </Button>
             </Alert>
@@ -166,6 +168,20 @@ const EditPost = () => {
                   />
                   <Form.Text className="text-muted">
                     {formData.metaDescription.length}/160 characters - This helps with SEO and social media sharing
+                  </Form.Text>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Image URL (Optional)</Form.Label>
+                  <Form.Control
+                    type="url"
+                    name="imageUrl"
+                    value={formData.imageUrl}
+                    onChange={handleChange}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  <Form.Text className="text-muted">
+                    Add an image URL to display with your post. Leave empty to use a placeholder image.
                   </Form.Text>
                 </Form.Group>
 

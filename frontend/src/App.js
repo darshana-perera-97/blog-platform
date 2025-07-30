@@ -23,6 +23,7 @@ import VerifyEmail from './components/VerifyEmail';
 import ResendVerification from './components/ResendVerification';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIBlogGenerator from './components/AIBlogGenerator';
+import LandingPage from './components/LandingPage';
 import './App.css';
 
 function App() {
@@ -33,14 +34,43 @@ function App() {
           <NavigationBar />
           <main>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/resend-verification" element={<ResendVerification />} />
-              <Route path="/post/:id" element={<PostDetail />} />
-              <Route path="/prompts" element={<Prompts />} />
-              <Route path="/prompt/:id" element={<PromptDetail />} />
+              <Route 
+                path="/home" 
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/post/:id" 
+                element={
+                  <ProtectedRoute>
+                    <PostDetail />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/prompts" 
+                element={
+                  <ProtectedRoute>
+                    <Prompts />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/prompt/:id" 
+                element={
+                  <ProtectedRoute>
+                    <PromptDetail />
+                  </ProtectedRoute>
+                } 
+              />
               <Route 
                 path="/create-post" 
                 element={
@@ -57,14 +87,22 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/create-prompt" 
-                element={
-                  <ProtectedRoute>
-                    <CreatePrompt />
-                  </ProtectedRoute>
-                } 
-              />
+                              <Route
+                  path="/create-prompt"
+                  element={
+                    <ProtectedRoute>
+                      <CreatePrompt />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <UserProfile />
+                    </ProtectedRoute>
+                  }
+                />
               <Route 
                 path="/edit-prompt/:id" 
                 element={

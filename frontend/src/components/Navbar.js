@@ -25,21 +25,42 @@ const NavigationBar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link 
-              as={Link} 
-              to="/" 
-              className={isActive('/') ? 'active' : ''}
-            >
-              📝 {isAuthenticated ? 'My Posts' : 'Posts'}
-            </Nav.Link>
-            
-            <Nav.Link 
-              as={Link} 
-              to="/prompts" 
-              className={isActive('/prompts') ? 'active' : ''}
-            >
-              🤖 {isAuthenticated ? 'My Prompts' : 'Prompts'}
-            </Nav.Link>
+            {isAuthenticated ? (
+              <>
+                <Nav.Link 
+                  as={Link} 
+                  to="/home" 
+                  className={isActive('/home') ? 'active' : ''}
+                >
+                  📝 My Posts
+                </Nav.Link>
+                
+                                        <Nav.Link
+                          as={Link}
+                          to="/prompts"
+                          className={isActive('/prompts') ? 'active' : ''}
+                        >
+                          🤖 My Prompts
+                        </Nav.Link>
+                        <Nav.Link
+                          as={Link}
+                          to="/profile"
+                          className={isActive('/profile') ? 'active' : ''}
+                        >
+                          👤 Profile
+                        </Nav.Link>
+              </>
+            ) : (
+              <>
+                <Nav.Link 
+                  as={Link} 
+                  to="/" 
+                  className={isActive('/') ? 'active' : ''}
+                >
+                  🏠 Home
+                </Nav.Link>
+              </>
+            )}
             
             {isAuthenticated && (
               <>

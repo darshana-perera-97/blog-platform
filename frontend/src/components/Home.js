@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Spinner, Alert, Badge, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { postsAPI, aiBlogAPI } from '../services/api';
+import { postsAPI, aiBlogAPI, authAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
@@ -13,12 +13,14 @@ const Home = () => {
   const [generatedPost, setGeneratedPost] = useState(null);
   const [availablePrompts, setAvailablePrompts] = useState([]);
   const [publishing, setPublishing] = useState({});
+  const [usageStats, setUsageStats] = useState(null);
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     fetchPosts();
     if (isAuthenticated) {
       fetchAvailablePrompts();
+      fetchUsageStats();
     }
   }, [isAuthenticated]);
 
@@ -39,6 +41,15 @@ const Home = () => {
       setAvailablePrompts(response.data);
     } catch (err) {
       console.error('Failed to load prompts:', err);
+    }
+  };
+
+  const fetchUsageStats = async () => {
+    try {
+      const response = await authAPI.getUsageStats();
+      setUsageStats(response.data);
+    } catch (err) {
+      console.error('Failed to load usage stats:', err);
     }
   };
 
@@ -114,10 +125,21 @@ const Home = () => {
       if (response.data.generated) {
         // Refresh posts to show the new generated post
         await fetchPosts();
+        // Update usage stats
+        if (response.data.usageStats) {
+          setUsageStats(response.data.usageStats);
+        }
         setShowQuickGenModal(false);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to generate blog post');
+      if (err.response?.status === 429) {
+        // Usage limit reached
+        setError(err.response.data.message);
+        // Refresh usage stats
+        await fetchUsageStats();
+      } else {
+        setError(err.response?.data?.message || 'Failed to generate blog post');
+      }
     } finally {
       setGenerating(false);
     }
@@ -185,44 +207,46 @@ const Home = () => {
       {posts.length === 0 ? (
         <Row>
           <Col className="text-center">
-            <Card className="p-5 border-0 shadow-sm">
-              <Card.Body>
-                <div className="mb-3">
-                  <span className="display-4">📝</span>
-                </div>
-                {isAuthenticated ? (
-                  <>
-                    <h3 className="mb-3">No posts yet!</h3>
-                    <p className="text-muted mb-4">Start creating your first blog post to share your thoughts with the world.</p>
-                    <div className="d-flex gap-2 justify-content-center">
-                      <Button as={Link} to="/create-post" variant="primary">
-                        Create Your First Post
-                      </Button>
-                      <Button 
-                        variant="outline-primary" 
-                        onClick={() => setShowQuickGenModal(true)}
-                        disabled={availablePrompts.length === 0}
-                      >
-                        Generate with AI
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="mb-3">No posts available!</h3>
-                    <p className="text-muted mb-4">Join our community to start creating and sharing amazing content.</p>
-                    <div className="d-flex gap-2 justify-content-center">
-                      <Button as={Link} to="/register" variant="primary">
-                        Join Now
-                      </Button>
-                      <Button as={Link} to="/login" variant="outline-primary">
-                        Sign In
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </Card.Body>
-            </Card>
+            <div className="empty-state">
+              <Card className="border-0 shadow-sm">
+                <Card.Body>
+                  <div className="mb-4">
+                    <span className="display-4">📝</span>
+                  </div>
+                  {isAuthenticated ? (
+                    <>
+                      <h3>No posts yet!</h3>
+                      <p>Start creating your first blog post to share your thoughts with the world.</p>
+                      <div className="d-flex gap-2 justify-content-center">
+                        <Button as={Link} to="/create-post" variant="primary">
+                          Create Your First Post
+                        </Button>
+                        <Button 
+                          variant="outline-primary" 
+                          onClick={() => setShowQuickGenModal(true)}
+                          disabled={availablePrompts.length === 0}
+                        >
+                          Generate with AI
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h3>No posts available!</h3>
+                      <p>Join our community to start creating and sharing amazing content.</p>
+                      <div className="d-flex gap-2 justify-content-center">
+                        <Button as={Link} to="/register" variant="primary">
+                          Join Now
+                        </Button>
+                        <Button as={Link} to="/login" variant="outline-primary">
+                          Sign In
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </Card.Body>
+              </Card>
+            </div>
           </Col>
         </Row>
       ) : (
@@ -230,6 +254,37 @@ const Home = () => {
           {posts.map(post => (
             <Col key={post.id} xs={12} md={6} lg={4} className="mb-4">
               <Card className="h-100 border-0 shadow-sm hover-lift">
+                {/* Post Image */}
+                <div className="post-image-container">
+                  {post.imageUrl ? (
+                    <img 
+                      src={post.imageUrl} 
+                      alt={post.title}
+                      className="card-img-top post-image"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'block';
+                      }}
+                    />
+                  ) : (
+                    <div className="placeholder-image">
+                      <div className="placeholder-content">
+                        <span className="placeholder-icon">
+                          {post.generatedFrom ? '🤖' : '📝'}
+                        </span>
+                        <p className="placeholder-text">{post.title}</p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="placeholder-image" style={{ display: 'none' }}>
+                    <div className="placeholder-content">
+                      <span className="placeholder-icon">
+                        {post.generatedFrom ? '🤖' : '📝'}
+                      </span>
+                      <p className="placeholder-text">{post.title}</p>
+                    </div>
+                  </div>
+                </div>
                 <Card.Body className="d-flex flex-column">
                   <div className="mb-3">
                     <div className="d-flex justify-content-between align-items-start mb-2">
@@ -320,7 +375,7 @@ const Home = () => {
       )}
 
       {/* Quick Generate Modal */}
-      <Modal show={showQuickGenModal} onHide={() => setShowQuickGenModal(false)} centered>
+      <Modal show={showQuickGenModal} onHide={() => setShowQuickGenModal(false)} centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title>🚀 Quick Blog Generation</Modal.Title>
         </Modal.Header>
@@ -329,8 +384,86 @@ const Home = () => {
             This will generate a blog post using one of your master prompts and a random topic. 
             The post will be saved as private by default.
           </p>
+          
+          {/* Usage Information */}
+          {usageStats && (
+            <div className="mb-4">
+              <h6 className="fw-bold mb-2">📊 Daily Usage</h6>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <span className="text-muted">Used today:</span>
+                <span className="fw-semibold">{usageStats.used} / {usageStats.max}</span>
+              </div>
+              <div className="progress mb-2" style={{ height: '8px' }}>
+                <div 
+                  className={`progress-bar ${usageStats.remaining === 0 ? 'bg-danger' : 'bg-success'}`}
+                  style={{ width: `${(usageStats.used / usageStats.max) * 100}%` }}
+                ></div>
+              </div>
+              <small className="text-muted">
+                {usageStats.remaining > 0 
+                  ? `${usageStats.remaining} blogs remaining today`
+                  : 'Daily limit reached - try again tomorrow'
+                }
+              </small>
+            </div>
+          )}
+          
+          {/* Available Prompts Preview */}
+          <div className="mb-4">
+            <h6 className="fw-bold mb-3">📝 Available Master Prompts ({availablePrompts.length})</h6>
+            {availablePrompts.length > 0 ? (
+              <div className="prompts-preview">
+                {availablePrompts.map((prompt, index) => (
+                  <div key={prompt.id} className="prompt-preview-item mb-3">
+                    <div className="d-flex align-items-start gap-3">
+                      <div className="prompt-number">
+                        <span className="badge bg-primary rounded-circle">{index + 1}</span>
+                      </div>
+                      <div className="flex-grow-1">
+                        <h6 className="fw-semibold mb-1">{prompt.title}</h6>
+                        <p className="text-muted small mb-1">
+                          Category: <span className="badge bg-light text-dark">{prompt.category}</span>
+                        </p>
+                        <p className="text-muted small mb-0 line-clamp-2">
+                          {prompt.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Alert variant="warning" className="mb-0">
+                <strong>No prompts available!</strong> Please create a master prompt first to use quick generation.
+              </Alert>
+            )}
+          </div>
+          
+          {/* Random Topics Preview */}
+          <div className="mb-3">
+            <h6 className="fw-bold mb-2">🎯 Random Topics That Will Be Used</h6>
+            <div className="topics-preview">
+              <div className="row">
+                {[
+                  'latest trends in technology',
+                  'personal development tips',
+                  'workplace productivity',
+                  'digital transformation',
+                  'future of work',
+                  'innovation in business'
+                ].slice(0, 6).map((topic, index) => (
+                  <div key={index} className="col-md-6 mb-2">
+                    <span className="badge bg-light text-dark border">
+                      {topic}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
           <Alert variant="info" className="mb-0">
-            <strong>Available Prompts:</strong> {availablePrompts.length}
+            <strong>Note:</strong> The system will randomly select one prompt and one topic for generation.
           </Alert>
         </Modal.Body>
         <Modal.Footer>
@@ -340,7 +473,7 @@ const Home = () => {
           <Button 
             variant="primary" 
             onClick={handleQuickGenerate}
-            disabled={generating}
+            disabled={generating || availablePrompts.length === 0 || (usageStats && usageStats.remaining === 0)}
           >
             {generating ? (
               <>

@@ -11,10 +11,12 @@ const api = axios.create({
 
 // API service for blog posts
 export const blogAPI = {
-  // Get all posts (this will return user-specific posts from the backend)
+  // Get all posts (this will return public posts from the backend)
+  // The frontend will filter for the configured user's published posts
   getAllPosts: () => api.get('/posts'),
   
   // Get a specific post by ID
+  // The frontend will verify it belongs to the configured user and is published
   getPost: (id) => api.get(`/posts/${id}`),
   
   // Get user information (if needed)
