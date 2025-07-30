@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from '@slorber/react-helmet-async';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import BlogList from './components/BlogList';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from '@slorber/react-helmet-async';
 import seoConfig from '../seo-config';
 
 const SEO = ({ 
