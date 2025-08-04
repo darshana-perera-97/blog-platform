@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sample Embed Page</title>
+    <title>User Blog Embed</title>
     <style>
         * {
             margin: 0;
@@ -15,167 +16,650 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8fafc;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 3rem;
-            max-width: 600px;
-            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
             text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            color: #4a5568;
-            margin-bottom: 1rem;
+        .header h1 {
             font-size: 2.5rem;
-            font-weight: 700;
-        }
-
-        .subtitle {
-            color: #718096;
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .feature-card {
-            background: #f7fafc;
-            padding: 1.5rem;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-card h3 {
-            color: #4a5568;
             margin-bottom: 0.5rem;
         }
 
-        .feature-card p {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-
-        .cta-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 25px;
+        .header p {
             font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
+            opacity: 0.9;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-top: 1rem;
+            cursor: pointer;
         }
 
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .footer {
-            margin-top: 2rem;
+        .blog-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .blog-image .fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-size: 3rem;
+        }
+
+        .blog-content {
+            padding: 1.5rem;
+        }
+
+        .blog-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .blog-excerpt {
+            color: #718096;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
             color: #a0aec0;
-            font-size: 0.9rem;
+        }
+
+        .blog-date {
+            font-weight: 500;
+        }
+
+        .blog-author {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .read-more {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .blog-link {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .blog-link:hover {
+            color: #5a67d8;
+            text-decoration: underline;
+        }
+
+        .blog-link .icon {
+            font-size: 0.8rem;
+        }
+
+        .view-platform-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 1rem;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .view-platform-btn:hover {
+            background: #38a169;
+        }
+
+        .blog-detail {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .blog-detail.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .back-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            transition: background 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #5a67d8;
+        }
+
+        .detail-title {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .detail-meta {
+            color: #718096;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-content {
+            color: #4a5568;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            white-space: pre-wrap;
+        }
+
+        .detail-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #718096;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
             .container {
-                padding: 2rem;
-                margin: 1rem;
+                padding: 1rem;
             }
 
-            h1 {
+            .header h1 {
                 font-size: 2rem;
             }
 
-            .feature-grid {
+            .blog-grid {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
+
+            .detail-title {
+                font-size: 1.5rem;
+            }
+        }
+
+
+
+
+
+        .config-info {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 5px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #234e52;
+        }
+
+        .config-info h4 {
+            margin-bottom: 0.5rem;
+            color: #234e52;
+        }
+
+        .config-info ul {
+            margin-left: 1rem;
+        }
+
+        .config-info li {
+            margin-bottom: 0.25rem;
+        }
+
+        .filter-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filter-toggle input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        .filter-toggle label {
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .advanced-options {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .advanced-options.show {
+            display: block;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1>Welcome to Embed</h1>
-        <p class="subtitle">A beautiful sample page for your embed folder</p>
-        
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h3>🚀 Fast & Responsive</h3>
-                <p>Built with modern CSS and optimized for all devices</p>
-            </div>
-            <div class="feature-card">
-                <h3>🎨 Beautiful Design</h3>
-                <p>Clean, modern interface with smooth animations</p>
-            </div>
-            <div class="feature-card">
-                <h3>📱 Mobile Friendly</h3>
-                <p>Fully responsive design that works on any screen size</p>
-            </div>
-            <div class="feature-card">
-                <h3>⚡ Lightweight</h3>
-                <p>Optimized code for fast loading and performance</p>
-            </div>
+        <!-- <div class="header">
+            <h1>👤 John Doe's Blog Collection</h1>
+            <p>Personal blog posts from <span id="userDisplayName">John Doe</span></p>
+        </div> -->
+
+
+
+        <!-- Blog Detail View -->
+        <div id="blogDetail" class="blog-detail">
+            <button onclick="showBlogList()" class="back-button">← Back to Blogs</button>
+            <img id="detailImage" class="detail-image" style="display: none;">
+            <h1 id="detailTitle" class="detail-title"></h1>
+            <div id="detailMeta" class="detail-meta"></div>
+            <div id="detailContent" class="detail-content"></div>
         </div>
 
-        <button class="cta-button" onclick="showMessage()">Get Started</button>
-        
-        <div class="footer">
-            <p>Created with ❤️ for your blog platform</p>
+        <!-- Blog List View -->
+        <div id="blogList">
+            <div id="loading" class="loading">Loading user blogs...</div>
+            <div id="error" class="error" style="display: none;"></div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <h3>No blogs found for this user</h3>
+                <p>Try adjusting the user ID or author name, or check if the API is running.</p>
+            </div>
+            <div id="blogGrid" class="blog-grid" style="display: none;"></div>
         </div>
     </div>
 
     <script>
-        function showMessage() {
-            alert('Welcome to your embed page! This is a sample HTML file.');
-        }
+        // Configuration - Hardcoded values
+        let currentBlogs = [];
+        let currentView = 'list'; // 'list' or 'detail'
+        let currentUser = null;
 
-        // Add some interactive effects
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.feature-card');
-            
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.style.animation = 'fadeInUp 0.6s ease forwards';
-            });
+        // Hardcoded configuration - Change these values as needed
+        const CONFIG = {
+            apiEndpoint: 'http://localhost:3033',
+            userId: 4, // Change this to the desired user ID
+            authorName: 'darshana', // Change this to the desired author name
+            publicOnly: true, // Set to false to show all posts including private ones
+            maxPosts: 10, // Maximum number of posts to display
+            customFilter: '' // Leave empty for no keyword filtering
+        };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function () {
+            // Load blogs automatically
+            loadUserBlogs();
         });
 
-        // Add CSS animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(30px);
+        // Load blogs for a specific user
+        async function loadUserBlogs() {
+            const { apiEndpoint, userId, authorName, publicOnly, customFilter, maxPosts } = CONFIG;
+
+            showLoading(true);
+            showError(false);
+            showEmptyState(false);
+
+            try {
+                // Test API health first
+                const healthResponse = await fetch(`${apiEndpoint}/api/health`);
+                if (!healthResponse.ok) {
+                    throw new Error('API is not responding. Please check the endpoint.');
                 }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
+
+                // Load posts
+                const response = await fetch(`${apiEndpoint}/api/posts`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+
+                const posts = await response.json();
+
+                if (Array.isArray(posts)) {
+                    // Filter posts for the specific user
+                    let filteredPosts = posts;
+
+                    // Filter by user ID or author name
+                    if (userId) {
+                        filteredPosts = filteredPosts.filter(post => post.authorId === parseInt(userId));
+                    } else if (authorName) {
+                        filteredPosts = filteredPosts.filter(post =>
+                            post.authorName && post.authorName.toLowerCase().includes(authorName.toLowerCase())
+                        );
+                    }
+
+                    // Filter by public status if requested
+                    if (publicOnly) {
+                        filteredPosts = filteredPosts.filter(post => post.isPublic === true);
+                    }
+
+                    // Apply custom filter if provided
+                    if (customFilter) {
+                        filteredPosts = filteredPosts.filter(post =>
+                            (post.title && post.title.toLowerCase().includes(customFilter.toLowerCase())) ||
+                            (post.content && post.content.toLowerCase().includes(customFilter.toLowerCase()))
+                        );
+                    }
+
+                    // Limit number of posts
+                    filteredPosts = filteredPosts.slice(0, maxPosts);
+
+                    // Sort by creation date (newest first)
+                    filteredPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                    currentBlogs = filteredPosts;
+
+                    displayBlogs(currentBlogs);
+                } else {
+                    throw new Error('Invalid response format - expected array of posts');
+                }
+
+            } catch (error) {
+                console.error('Error loading user blogs:', error);
+                showError(`Failed to load user blogs: ${error.message}`);
+                showEmptyState(true);
+            } finally {
+                showLoading(false);
             }
-        `;
-        document.head.appendChild(style);
+        }
+
+
+
+        // Display blogs in the grid
+        function displayBlogs(blogs) {
+            const blogGrid = document.getElementById('blogGrid');
+            const blogList = document.getElementById('blogList');
+
+            if (blogs.length === 0) {
+                showEmptyState(true);
+                return;
+            }
+
+            blogGrid.innerHTML = '';
+
+            blogs.forEach((blog, index) => {
+                const blogCard = createBlogCard(blog, index);
+                blogGrid.appendChild(blogCard);
+            });
+
+            blogGrid.style.display = 'grid';
+            showEmptyState(false);
+        }
+
+        // Create a blog card element
+        function createBlogCard(blog, index) {
+            const card = document.createElement('div');
+            card.className = 'blog-card';
+            card.onclick = () => showBlogDetail(index);
+
+            const excerpt = blog.content ?
+                blog.content.substring(0, 150) + (blog.content.length > 150 ? '...' : '') :
+                'No content available';
+
+            const date = blog.createdAt ?
+                new Date(blog.createdAt).toLocaleDateString() :
+                'Unknown date';
+
+            const author = blog.authorName || 'Unknown Author';
+            const postUrl = getPostUrl(blog.id);
+
+            card.innerHTML = `
+                <div class="blog-image">
+                    ${blog.imageUrl ?
+                    `<img src="${getImageUrl(blog.imageUrl)}" alt="${blog.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` :
+                    ''
+                }
+                    <div class="fallback" style="${blog.imageUrl ? 'display: none;' : 'display: flex;'}">
+                        ${blog.title ? blog.title.charAt(0).toUpperCase() : '📝'}
+                    </div>
+                </div>
+                <div class="blog-content">
+                    <h3 class="blog-title">${blog.title || 'Untitled'}</h3>
+                    <p class="blog-excerpt">${excerpt}</p>
+                    <div class="blog-meta">
+                        <div>
+                            <span class="blog-date">${date}</span>
+                            <span class="blog-author"> • ${author}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span class="read-more">Read more →</span>
+                            <a href="${postUrl}" target="_blank" class="blog-link" onclick="event.stopPropagation();">
+                                <span class="icon">🔗</span>
+                                View Post
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Get proper image URL
+        function getImageUrl(imageUrl) {
+            if (imageUrl && imageUrl.startsWith('/')) {
+                return `${CONFIG.apiEndpoint}${imageUrl}`;
+            }
+            return imageUrl;
+        }
+
+        // Get post URL for the platform
+        function getPostUrl(postId) {
+            // Assuming the frontend is running on the same domain but different port
+            const frontendUrl = CONFIG.apiEndpoint.replace('3033', '3000'); // Adjust port as needed
+            return `${frontendUrl}/post/${postId}`;
+        }
+
+        // Show blog detail view
+        function showBlogDetail(blogIndex) {
+            const blog = currentBlogs[blogIndex];
+            const blogDetail = document.getElementById('blogDetail');
+            const blogList = document.getElementById('blogList');
+
+            // Populate detail view
+            document.getElementById('detailTitle').textContent = blog.title || 'Untitled';
+
+            const date = blog.createdAt ?
+                new Date(blog.createdAt).toLocaleDateString() :
+                'Unknown date';
+
+            const author = blog.authorName || 'Unknown Author';
+            const postUrl = getPostUrl(blog.id);
+
+            document.getElementById('detailMeta').innerHTML = `
+                <strong>Published:</strong> ${date} | 
+                <strong>Author:</strong> ${author}
+                <a href="${postUrl}" target="_blank" class="view-platform-btn">
+                    <span>🌐</span>
+                    View on Platform
+                </a>
+            `;
+
+            document.getElementById('detailContent').textContent =
+                blog.content || 'No content available';
+
+            // Handle image
+            const detailImage = document.getElementById('detailImage');
+            if (blog.imageUrl) {
+                detailImage.src = getImageUrl(blog.imageUrl);
+                detailImage.alt = blog.title || 'Blog image';
+                detailImage.style.display = 'block';
+            } else {
+                detailImage.style.display = 'none';
+            }
+
+            // Show detail view
+            blogDetail.classList.add('active');
+            blogList.style.display = 'none';
+            currentView = 'detail';
+        }
+
+        // Show blog list view
+        function showBlogList() {
+            const blogDetail = document.getElementById('blogDetail');
+            const blogList = document.getElementById('blogList');
+
+            blogDetail.classList.remove('active');
+            blogList.style.display = 'block';
+            currentView = 'list';
+        }
+
+        // Utility functions
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            if (message) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+        }
+
+        function showEmptyState(show) {
+            document.getElementById('emptyState').style.display = show ? 'block' : 'none';
+            if (show) {
+                document.getElementById('blogGrid').style.display = 'none';
+            }
+        }
+
+        // Handle keyboard navigation
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && currentView === 'detail') {
+                showBlogList();
+            }
+        });
+
+        // Auto-refresh blogs every 5 minutes
+        setInterval(() => {
+            if (currentView === 'list') {
+                loadUserBlogs();
+            }
+        }, 300000);
     </script>
 </body>
-</html> 
+
+</html>
