@@ -24,12 +24,7 @@ yarn-error.log*
 
 # ===== SECURITY & CONFIGURATION FILES =====
 # Configuration files that may contain sensitive data
-/src/config.js
-/config.js
-config.js
-*.config.js
-*.config.json
-config-examples.js
+
 
 # Environment variables and secrets
 .env
@@ -187,7 +182,6 @@ dist
 
 # Gatsby files
 .cache/
-public
 
 # Storybook build outputs
 .out
